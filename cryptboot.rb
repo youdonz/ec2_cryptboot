@@ -14,7 +14,7 @@ File.open("#{boot_id}.key", 'w') do |keyfile|
   keyfile << key
 end
 
-cmd = "tar zc #{directory} | openssl enc -pass 'file:#{boot_id}.key' -out 'out/#{boot_id}.tgz.enc'"
+cmd = "tar zc #{directory} | openssl enc -aes-256-cbc -pass 'file:#{boot_id}.key' -out 'out/#{boot_id}.tgz.enc'"
 system cmd
 
 File.unlink("#{boot_id}.key")
@@ -44,7 +44,7 @@ Content-Type: text/cloud-config
 Content-Type: text/x-shellscript
 
 wget -o '#{boot_id}.tgz.enc' '#{uri_path}/#{boot_id}.tgz.enc'
-openssl enc -d -pass 'pass:#{key}' -in '#{boot_id}.tgz.enc' -out '#{boot_id}.tgz'
+openssl enc -aes-256-cbc -d -pass 'pass:#{key}' -in '#{boot_id}.tgz.enc' -out '#{boot_id}.tgz'
 tar zxf '#{boot_id}.tgz'
 #{command}
 --#{boundary}--
