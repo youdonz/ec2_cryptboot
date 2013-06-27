@@ -1,0 +1,19 @@
+EC2 Cryptboot
+-------------
+
+This is designed to get around a couple of issues:
+
+* EC2 user data is limited to a few kilobytes, so can't contain whole programs.
+* EC2 VMs start without any special credentials to authenticate themselves.
+
+As a result we have to download any startup code from a source, but the VM can't authenticate itself easily. We can get around this by putting credentials used to access the actual code run in the user data.
+
+This tool packages a directory as an encrypted archive with a random key. You upload this to a public web server, but without the key to decrypt it. It also writes a compressed boot script which contains the key, and will download, decrypt and extract that archive.
+
+To begin, copy the example directory to another of your choice. Add any files needed to that directory, and alter the init.sh script to do what you want on startup. Packages, apt sources, etc can be added to config.yml in the Ubuntu #cloud-init format.
+
+Next run:
+
+ruby cryptboot.rb <your directory> http://your.public.web.server/path/to/files/
+
+It will create a directory called "out" and a pair of files in this. Upload the .tgz.enc file to your web server at the path given, and boot an Ubuntu VM on EC2 with the .boot.gz file as your userdata.

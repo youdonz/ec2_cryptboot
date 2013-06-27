@@ -4,7 +4,6 @@ require 'yaml'
 
 directory = ARGV.shift || "example"
 uri_path = ARGV.shift || "http://localhost"
-command = ARGV.shift || "#{directory}/init.sh"
 
 system "mkdir out"
 
@@ -21,6 +20,8 @@ system cmd
 File.unlink("#{boot_id}.key")
 
 config_file = "#{directory}/config.yml"
+command = "#{directory}/init.sh"
+
 config = {}
 if File.exists?(config_file)
   config = YAML.load_file(config_file)
