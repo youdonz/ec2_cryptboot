@@ -10,14 +10,8 @@ system "mkdir out"
 boot_id = `openssl rand -hex 4`.chomp
 key = `openssl rand -hex 20`.chomp
 
-File.open("#{boot_id}.key", 'w') do |keyfile|
-  keyfile << key
-end
-
-cmd = "tar zc #{directory} | openssl enc -aes-256-cbc -pass 'file:#{boot_id}.key' -out 'out/#{boot_id}.tgz.enc'"
+cmd = "tar zc #{directory} | openssl enc -aes-256-cbc -pass 'pass:#{key}' -out 'out/#{boot_id}.tgz.enc'"
 system cmd
-
-File.unlink("#{boot_id}.key")
 
 config_file = "#{directory}/config.yml"
 command = "#{directory}/init.sh"
