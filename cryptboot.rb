@@ -5,6 +5,8 @@ require 'yaml'
 directory = ARGV.shift || "example"
 uri_path = ARGV.shift || "http://localhost"
 
+uri_path.gsub!(/\/$/, '')
+
 system "mkdir out"
 
 boot_id = `openssl rand -hex 4`.chomp
@@ -37,9 +39,10 @@ Content-Type: text/cloud-config
 --#{boundary}
 Content-Type: text/x-shellscript
 
-wget -o '#{boot_id}.tgz.enc' '#{uri_path}/#{boot_id}.tgz.enc'
+wget -O '#{boot_id}.tgz.enc' '#{uri_path}/#{boot_id}.tgz.enc'
 openssl enc -aes-256-cbc -d -pass 'pass:#{key}' -in '#{boot_id}.tgz.enc' -out '#{boot_id}.tgz'
 tar zxf '#{boot_id}.tgz'
+chmod +x #{command}
 #{command}
 --#{boundary}--
 END
