@@ -5,7 +5,7 @@ require 'yaml'
 directory = ARGV.shift || "example"
 uri_path = ARGV.shift || "http://localhost"
 
-uri_path.gsub!(/\/$/, '')
+uri_path = uri_path.gsub(/\/$/, '')
 
 system "mkdir out"
 
