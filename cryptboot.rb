@@ -25,7 +25,7 @@ end
 
 # Ensure that wget and openssl are present
 config["packages"] ||= []
-config["packages"] += ['wget', 'openssl']
+config["packages"] += ['wget', 'openssl', 'screen', 'bash']
 
 boundary = `openssl rand -hex 20`.chomp
 bootscript = <<-END
@@ -39,12 +39,15 @@ Content-Type: text/cloud-config
 --#{boundary}
 Content-Type: text/x-shellscript
 
+#!/bin/bash -ex
+
+cd /root
 wget -O '#{boot_id}.tgz.enc' '#{uri_path}/#{boot_id}.tgz.enc'
 openssl enc -aes-256-cbc -d -pass 'pass:#{key}' -in '#{boot_id}.tgz.enc' -out '#{boot_id}.tgz'
 tar zxf '#{boot_id}.tgz'
 cd #{directory}
 chmod +x #{command}
-#{command}
+screen -d -m #{command}
 --#{boundary}--
 END
 
