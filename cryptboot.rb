@@ -12,11 +12,11 @@ system "mkdir out"
 boot_id = `openssl rand -hex 4`.chomp
 key = `openssl rand -hex 20`.chomp
 
-cmd = "tar zc #{directory} | openssl enc -aes-256-cbc -pass 'pass:#{key}' -out 'out/#{boot_id}.tgz.enc'"
+cmd = "tar zch #{directory} | openssl enc -aes-256-cbc -pass 'pass:#{key}' -out 'out/#{boot_id}.tgz.enc'"
 system cmd
 
 config_file = "#{directory}/config.yml"
-command = "#{directory}/init.sh"
+command = "./init.sh"
 
 config = {}
 if File.exists?(config_file)
@@ -42,6 +42,7 @@ Content-Type: text/x-shellscript
 wget -O '#{boot_id}.tgz.enc' '#{uri_path}/#{boot_id}.tgz.enc'
 openssl enc -aes-256-cbc -d -pass 'pass:#{key}' -in '#{boot_id}.tgz.enc' -out '#{boot_id}.tgz'
 tar zxf '#{boot_id}.tgz'
+cd #{directory}
 chmod +x #{command}
 #{command}
 --#{boundary}--
