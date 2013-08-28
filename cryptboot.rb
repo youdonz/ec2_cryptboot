@@ -47,7 +47,7 @@ openssl enc -aes-256-cbc -d -pass 'pass:#{key}' -in '#{boot_id}.tgz.enc' -out '#
 tar zxf '#{boot_id}.tgz'
 cd #{directory}
 chmod +x #{command}
-screen -d -m #{command}
+screen -L -d -m #{command}
 --#{boundary}--
 END
 
