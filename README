@@ -8,7 +8,7 @@ This is designed to get around a couple of issues:
 
 As a result we have to download any startup code from a source, but the VM can't authenticate itself easily. We can get around this by putting credentials used to access the actual code run in the user data.
 
-This tool packages a directory as an encrypted archive with a random key. You upload this to a public web server, but without the key to decrypt it. It also writes a compressed boot script which contains the key, and will download, decrypt and extract that archive.
+This tool packages a directory as an encrypted archive with a random key. You upload this to a public web server, but without the key to decrypt it. It also writes a compressed boot script which contains the key, and will download, decrypt and extract that archive. It will then run a script "init.sh" from within that directory automatically, allowing you to continue automatic set-up.
 
 Requirements
 ============
@@ -32,3 +32,10 @@ Next run:
 ruby cryptboot.rb <your directory> http://your.public.web.server/path/to/files/
 
 It will create a directory called "out" and a pair of files in this. Upload the .tgz.enc file to your web server at the path given, and boot an Ubuntu VM on EC2 with the .boot.gz file as your userdata.
+
+If you have an existing directory containing your project files and an init.sh, you can symlink it in:
+
+ln -s /path/to/your/project my_project
+ruby cryptboot.rb my_project http://your.public.web.server/path/to/files/
+
+On the destination machine, your project would be unpacked to /root/my_project and it would run ./init.sh from that directory.
