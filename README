@@ -25,7 +25,7 @@ Cloudinit is used to ensure all required packages are installed on the VM end.
 Using
 =====
 
-To begin, copy the example directory to another of your choice. Add any files needed to that directory, and alter the init.sh script to do what you want on startup. Packages, apt sources, etc can be added to config.yml in the Ubuntu #cloud-init format.
+To begin, copy the template directory to another of your choice. Add any files needed to that directory, and alter the init.sh script to do what you want on startup. Packages, apt sources, etc can be added to config.yml in the Ubuntu #cloud-init format. It will follow symlinks.
 
 Next run:
 
