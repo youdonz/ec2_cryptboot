@@ -1,0 +1,8 @@
+# Make sure to run bundle install after each change and include the Gemfile.lock
+# Deployment depends on the right versions being in there
+
+source 'https://rubygems.org'
+
+gem 'rack'
+gem 'thin'
+
