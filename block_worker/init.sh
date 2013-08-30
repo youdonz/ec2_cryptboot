@@ -2,5 +2,5 @@
 
 sh compile.sh
 
-ruby rainbow_tables.rb `cat HOST`
+ruby worker.rb `cat HOST`
 

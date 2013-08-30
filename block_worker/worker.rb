@@ -28,6 +28,9 @@ if $0 == __FILE__
                   sock.flush
                 end
               end
+              if $? == 0
+                sock.puts "Done #{md[1]}"
+              end
             end
           end
         rescue => e
