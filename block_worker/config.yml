@@ -1,0 +1,4 @@
+packages:
+  - ruby1.9.1-full
+  - rubygems
+  - build-essentials

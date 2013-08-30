@@ -1,0 +1,15 @@
+This is an example of a custom Ruby/EventMachine server which can be set up and run on EC2 with cryptboot. This is a simple implicit queue of numbers. Workers connect, get given a range of numbers, do some processing for each number in that range, then return results.
+
+For example, these numbers could be identifiers in a large database we want to parallellise a search over, or could represent choices in a game. Many searches where we have to consider every option can be mapped so that a number represents a choice.
+
+It listens on a TCP port (by default 12345) and gives any connecting client a message like:
+
+Run '0' '8192'
+
+These numbers are the start and stop of a range of options it should try. As long as the connection is open, this range of numbers will be reserved for that client and not handed to any other client. Any data sent over TCP is logged in a directory, by default "blocks".
+
+Each client must end its response with a line:
+
+Done '0' '8192'
+
+Where the numbers are identical to the original 'Run' line. If this line is not sent back, the server assumes the client failed to process the range.
