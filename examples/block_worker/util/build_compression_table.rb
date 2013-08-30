@@ -22,27 +22,36 @@ def print_tree(tree, path = "")
   end
 end
 
-symbols = []
-File.open(ARGV.shift, 'r') do |file|
-  file.each_line do |line|
-    symbol, weight = line.chomp.split(",")
-    symbols << [symbol, weight.to_f]
+def scan_tree(tree, character, path = "")
+  if tree.kind_of?(Array)
+    scan_tree(tree.first, character, path + "0") || scan_tree(tree.last, character, path + "1")
+  else
+    if tree == character
+      path
+    else
+      nil
+    end
   end
 end
 
-while symbols.length > 1
-  symbols.sort_by! {|pair| 0 - pair[1]}
-  second = symbols.pop
-  first = symbols.pop
-  symbols << [[first[0], second[0]], first[1] + second[1]]
+def generate_tree(frequency_file)
+  symbols = []
+  File.open(frequency_file, 'r') do |file|
+    file.each_line do |line|
+      symbol, weight = line.chomp.split(",")
+      symbols << [symbol, weight.to_f]
+    end
+  end
+
+  while symbols.length > 1
+    symbols.sort_by! {|pair| 0 - pair[1]}
+    second = symbols.pop
+    first = symbols.pop
+    symbols << [[first[0], second[0]], first[1] + second[1]]
+  end
+
+  symbols.first.first
 end
-
-tree = symbols.first.first
-
-print_tree tree
-
-ctree = build_subtree(tree)
-p ctree
 
 def test_tree(ctree, tree, path = "")
   if tree.kind_of?(Array)
@@ -76,4 +85,13 @@ def test_tree(ctree, tree, path = "")
   end
 end
 
-test_tree ctree, tree
+if $0 == __FILE__
+  tree = generate_tree(ARGV.shift)
+
+  print_tree tree
+
+  ctree = build_subtree(tree)
+  p ctree
+
+  test_tree ctree, tree
+end
