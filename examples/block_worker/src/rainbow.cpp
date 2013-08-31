@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define MAX_PW_LENGTH 8
+// MAX_PW_LENGTH must accommodate the chain number as a decimal
+#define MAX_PW_LENGTH 10
 #define CHAIN_LENGTH 100000
 
 #define PW_LENGTH_BITS 3
