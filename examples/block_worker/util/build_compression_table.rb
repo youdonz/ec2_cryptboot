@@ -34,12 +34,12 @@ def scan_tree(tree, character, path = "")
   end
 end
 
-def generate_tree(frequency_file)
+def generate_tree(frequency_file, baseline)
   symbols = []
   File.open(frequency_file, 'r') do |file|
     file.each_line do |line|
       symbol, weight = line.chomp.split(",")
-      symbols << [symbol, weight.to_f]
+      symbols << [symbol, weight.to_f + baseline]
     end
   end
 
@@ -86,7 +86,10 @@ def test_tree(ctree, tree, path = "")
 end
 
 if $0 == __FILE__
-  tree = generate_tree(ARGV.shift)
+  file = ARGV.shift
+  baseline = (ARGV.shift || '0').to_i
+  
+  tree = generate_tree(file, baseline)
 
   print_tree tree
 

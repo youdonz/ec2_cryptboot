@@ -1,6 +1,9 @@
 load 'build_compression_table.rb'
 
-tree = generate_tree(ARGV.shift)
+file = ARGV.shift
+baseline = (ARGV.shift || 0).to_i
+
+tree = generate_tree(file, baseline)
 
 print_tree tree
 
