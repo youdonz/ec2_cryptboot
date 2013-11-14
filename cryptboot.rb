@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'optparse'
+
 def config_merge(a, b)
   if a.nil? || b.nil?
     a || b
@@ -48,14 +50,39 @@ end
 
 require 'yaml'
 
-directory = ARGV.shift || "example"
-uri_path = ARGV.shift || "http://localhost"
+options = {}
 
-uri_path = uri_path.gsub(/\/$/, '')
+optparse = OptionParser.new do|opts|
+  opts.banner = "Usage: cryptboot.rb [options] directory/install/"
+
+  options[:verbose] = false
+  opts.on( '-v', '--verbose', 'Output more information' ) do
+    options[:verbose] = true
+  end
+  
+  options[:uri_path] = 'http://localhost/'
+  opts.on( '-u', '--uri-base URI', 'URI to directory where encrypted bundle will be available' ) do |uri|
+    options[:uri_path] = uri
+  end
+  
+  opts.on( '-p', '--package-prefix PREFIX', 'Prefix to identify the encrypted bundles' ) do |uri|
+    options[:prefix] = uri
+  end
+
+  opts.on( nil, '--help', 'Display this screen' ) do
+    puts opts
+    exit
+  end
+end
+
+remaining = optparse.parse(ARGV)
+directory = (remaining.shift || "example").gsub(/\/$/, '')
+uri_path = options[:uri_path].gsub(/\/$/, '')
 
 system "mkdir out"
 
-boot_id = `openssl rand -hex 4`.chomp
+prefix = options[:prefix] || (directory.gsub(/.*\//, '') + ".")
+boot_id = prefix + `date +"%Y-%m-%d.%H%M"`.chomp
 key = `openssl rand -hex 20`.chomp
 
 cmd = "tar zch #{directory} | openssl enc -aes-256-cbc -pass 'pass:#{key}' -out 'out/#{boot_id}.tgz.enc'"
@@ -85,10 +112,10 @@ Content-Type: text/x-shellscript
 cd /root
 wget -O '#{boot_id}.tgz.enc' '#{uri_path}/#{boot_id}.tgz.enc'
 openssl enc -aes-256-cbc -d -pass 'pass:#{key}' -in '#{boot_id}.tgz.enc' -out '#{boot_id}.tgz'
-tar zxf '#{boot_id}.tgz'
+tar zxf '#{boot_id}.tgz' && rm '#{boot_id}.tgz'
 cd #{directory}
 chmod +x #{command}
-screen -L -d -m #{command}
+cloud-init-per once cryptboot screen -L -d -m #{command}
 --#{boundary}--
 END
 
