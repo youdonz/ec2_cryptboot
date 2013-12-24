@@ -1,0 +1,9 @@
+Sets up a PostgreSQL database server with continuous backups to an S3 bucket.
+
+* Put AWS credentials and chosen S3 bucket in files in wal-e.d .
+* List client applications in client_applications.
+* Create image and boot.
+
+For each application listed in client_applications, a user and database of the
+same name owned by that user is created. The passwords are randomly chosen and
+put in /root/db.passwords. Log in to the DB server to get those.

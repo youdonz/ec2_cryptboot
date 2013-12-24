@@ -1,0 +1,13 @@
+Sets up a standby database, replaying transaction logs from an S3 bucket.
+
+* Put AWS credentials and chosen S3 bucket in files in wal-e.d .
+* Optionally add master database IP and standby password to recovery.conf .
+* Create image and boot.
+
+This starts a warm standby database, following the archives put in an S3 bucket.
+At least one backup must already exist in that bucket.
+
+If you want the database to start as soon as it catches up to the current state,
+rather than continuing to wait and apply changes, copy recovery.conf.once over
+recovery.conf . You can also add timeline arguments to this config and change
+the CHOSEN_BACKUP file to do point-in-time recovery.

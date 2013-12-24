@@ -1,0 +1,2 @@
+# m h  dom mon dow   user       command
+  0 2  *   *   *     postgres   envdir /etc/wal-e.d /usr/local/bin/wal-e backup-push /var/lib/postgresql/9.1/main/

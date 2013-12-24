@@ -1,0 +1,17 @@
+mounts:
+  - [xvdb, /var/lib/postgresql, "xfs", "noatime,nodiratime,nobarrier,noexec", 0, 0]
+packages:
+  - nginx
+  - memcached
+  - postgresql-9.1
+  - postgresql-client-common
+  - pwgen
+  - pv
+  - unzip
+  - python2.7
+  - python-setuptools
+  - python-gevent
+  - daemontools
+  - lzop
+  - xfsprogs
+timezone: "Pacific/Auckland"

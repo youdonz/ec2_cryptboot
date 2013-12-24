@@ -1,0 +1,1 @@
+restore_command = 'envdir /etc/wal-e.d /usr/local/bin/wal-e wal-fetch "%f" "%p"'
