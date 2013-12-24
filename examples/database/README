@@ -1,5 +1,11 @@
 Sets up a PostgreSQL database server with continuous backups to an S3 bucket.
 
+WARNING: This archives backups and WAL logs to Amazon S3 and does not delete them.
+You are responsible for watching these and all associated charges as per the
+licence of this software.
+
+* Create an S3 bucket to hold the database backups and logs using the AWS management tools.
+* Optionally, add a lifecycle policy to the bucket to delete old backups and logs.
 * Put AWS credentials and chosen S3 bucket in files in wal-e.d .
 * List client applications in client_applications.
 * Create image and boot.
