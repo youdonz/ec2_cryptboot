@@ -1,5 +1,3 @@
-mounts:
-  - [xvdb, /var/lib/postgresql, "xfs", "noatime,nodiratime,nobarrier,noexec", 0, 0]
 packages:
   - nginx
   - memcached
