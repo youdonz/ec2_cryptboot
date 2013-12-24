@@ -27,6 +27,8 @@ Using
 
 To begin, copy the template directory to another of your choice. Add any files needed to that directory, and alter the init.sh script to do what you want on startup. Packages, apt sources, etc can be added to config.yml in the Ubuntu #cloud-init format. It will follow symlinks.
 
+You will need a public web server to host the encrypted bundles on. An easy way to do this is to set up an S3 bucket with static hosting ( see https://docs.aws.amazon.com/AmazonS3/latest/dev/website-hosting-custom-domain-walkthrough.html ) and put the files in there.
+
 Next run:
 
 ruby cryptboot.rb -u http://your.public.web.server/path/to/files/ <your directory>
