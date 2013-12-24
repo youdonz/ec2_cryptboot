@@ -29,13 +29,13 @@ To begin, copy the template directory to another of your choice. Add any files n
 
 Next run:
 
-ruby cryptboot.rb <your directory> http://your.public.web.server/path/to/files/
+ruby cryptboot.rb -u http://your.public.web.server/path/to/files/ <your directory>
 
 It will create a directory called "out" and a pair of files in this. Upload the .tgz.enc file to your web server at the path given, and boot an Ubuntu VM on EC2 with the .boot.gz file as your userdata.
 
 If you have an existing directory containing your project files and an init.sh, you can symlink it in:
 
 ln -s /path/to/your/project my_project
-ruby cryptboot.rb my_project http://your.public.web.server/path/to/files/
+ruby cryptboot.rb -u http://your.public.web.server/path/to/files/ my_project
 
 On the destination machine, your project would be unpacked to /root/my_project and it would run ./init.sh from that directory.
