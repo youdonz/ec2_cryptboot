@@ -65,6 +65,17 @@ optparse = OptionParser.new do|opts|
     options[:uri_path] = uri
   end
   
+  options[:include_tar] = false
+  opts.on( '-i', '--include-tar', 'Include the tarball in the boot script. Note user data size limits.' ) do
+    options[:include_tar] = true
+    options[:encrypt] = false
+  end
+  
+  options[:encrypt] = true
+  opts.on( '-p', '--public', 'Turn off encryption of the tar.' ) do
+    options[:encrypt] = false
+  end
+  
   opts.on( '-p', '--package-prefix PREFIX', 'Prefix to identify the encrypted bundles' ) do |uri|
     options[:prefix] = uri
   end
@@ -83,10 +94,15 @@ system "mkdir out"
 
 prefix = options[:prefix] || (directory.gsub(/.*\//, '') + ".")
 boot_id = prefix + `date +"%Y-%m-%d.%H%M"`.chomp
-key = `openssl rand -hex 20`.chomp
 
-cmd = "tar zch #{directory} | openssl enc -aes-256-cbc -pass 'pass:#{key}' -out 'out/#{boot_id}.tgz.enc'"
-system cmd
+if options[:encrypt]
+  key = `openssl rand -hex 20`.chomp
+  tar_output = "out/#{boot_id}.tgz.enc"
+  system "tar zch #{directory} | openssl enc -aes-256-cbc -pass 'pass:#{key}' -out '#{tar_output}'"
+else
+  tar_output = "out/#{boot_id}.tgz"
+  system "tar zchf '#{tar_output}' #{directory}"
+end
 
 config = load_config(directory)
 command = "./init.sh"
@@ -110,21 +126,51 @@ Content-Type: text/x-shellscript
 #!/bin/bash -ex
 
 cd /root
+END
+
+if options[:include_tar]
+  bootscript << <<-END
+sed -e '1,/^exit$/d' "$0" | tar -zxvf -
+  END
+else
+  if options[:encrypt]
+    bootscript << <<-END
 wget -O '#{boot_id}.tgz.enc' '#{uri_path}/#{boot_id}.tgz.enc'
 openssl enc -aes-256-cbc -d -pass 'pass:#{key}' -in '#{boot_id}.tgz.enc' -out '#{boot_id}.tgz'
 tar zxf '#{boot_id}.tgz' && rm '#{boot_id}.tgz'
+    END
+  else
+    bootscript << <<-END
+wget -O '#{boot_id}.tgz' '#{uri_path}/#{boot_id}.tgz'
+tar zxf '#{boot_id}.tgz' && rm '#{boot_id}.tgz'
+    END
+  end
+end
+
+bootscript << <<-END
 cd #{directory}
 chmod +x #{command}
 cloud-init-per once cryptboot screen -L -d -m #{command}
---#{boundary}--
 END
+
+if options[:include_tar]
+  bootscript << "exit\n"
+  bootscript << File.read(tar_output)
+end
+
+bootscript << "\n--#{boundary}--"
 
 IO.popen("gzip -c > out/#{boot_id}.boot.gz", "w") do |bootfile|
   bootfile << bootscript
 end
 
 STDERR.puts "---"
-STDERR.puts "Upload out/#{boot_id}.tgz.enc to #{uri_path}/#{boot_id}.tgz.enc"
+if bootscript.length > 16000
+  STDERR.puts "Warning: large boot script. Check that it is compatible with the cloud being used."
+end
+if !options[:include_tar]
+  STDERR.puts "Upload #{tar_output} to #{uri_path}/"
+end
 STDERR.puts "Start Ubuntu EC2 VMs with out/#{boot_id}.boot.gz as boot data"
 STDERR.puts "VMs will unpack archive and run #{command}"
 STDERR.puts "---"
